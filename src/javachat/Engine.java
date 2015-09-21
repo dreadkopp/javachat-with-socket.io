@@ -11,9 +11,10 @@ public class Engine {
 
 	Buffer buffer = new Buffer();
 	Gui gui;
-	ArrayList<Chatwindow> windows;
 	Socket socket;
+	String tempwho = "";
 	String tempmessage = "";
+	ArrayList<String> users = new ArrayList<String>();
 
 	public Engine() {
 
@@ -46,19 +47,27 @@ public class Engine {
 
 			@Override
 			public void call(Object... args) {
-				tempmessage = args[0].toString() + " sagt: ";
+				tempwho = args[0].toString();
 			}
 
 		}).on("support message", new Emitter.Listener() {
 
 			@Override
 			public void call(Object... args) {
-				tempmessage = tempmessage + args[0].toString();
+				tempmessage = tempwho + " sagt: " + args[0].toString();
 				System.out.println(tempmessage);
 
-				buffer.addMessage(tempmessage);
+				buffer.push(tempmessage);
+				if (!users.contains(tempwho)) {
+					gui.getTabs().add(new Chatwindow(tempwho));
+					gui.updatetabs();
+				}
+				users.add(tempwho);
 				// clean
+				tempwho = "";
 				tempmessage = "";
+				gui.update(buffer);
+				buffer.flush();
 
 			}
 
@@ -93,10 +102,12 @@ public class Engine {
 
 	}
 
-	public void update(ArrayList<Buffer> buffers) {
+	public ArrayList<String> getUsers() {
+		return users;
+	}
 
-		// update the Buffer
-
+	public void setUsers(ArrayList<String> users) {
+		this.users = users;
 	}
 
 	public void setGui(Gui gui) {
@@ -107,6 +118,7 @@ public class Engine {
 	public void run() {
 
 		gui.show();
+		gui.updatetabs();
 
 	}
 
@@ -117,6 +129,10 @@ public class Engine {
 
 	public Socket getSocket() {
 		return socket;
+	}
+
+	public Gui getGui() {
+		return this.gui;
 	}
 
 }

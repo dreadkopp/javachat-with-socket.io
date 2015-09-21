@@ -1,11 +1,8 @@
 package javachat;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -14,8 +11,16 @@ import javax.swing.JTextArea;
 
 public class Gui {
 
+	JPanel log = new JPanel();
 	JFrame frame = new JFrame();
 	JTabbedPane tabbedPane = new JTabbedPane();
+	ArrayList<Chatwindow> tabs = new ArrayList<Chatwindow>();
+	JTextArea textArea;
+	JScrollPane scrollPane = new JScrollPane(log);
+
+	public ArrayList<Chatwindow> getTabs() {
+		return tabs;
+	}
 
 	public Gui() {
 		frame.setSize(400, 800);
@@ -26,9 +31,30 @@ public class Gui {
 
 	}
 
-	public void update(ArrayList<Buffer> buffers) {
+	public void updatetabs() {
+		tabbedPane.removeAll();
+		tabbedPane.addTab("Log", null, scrollPane, "Does nothing");
+		for (Chatwindow tab : tabs) {
+			String name = tab.getLabel().getText();
+			tabbedPane.addTab(name, null, tab.getPanel(), "");
 
-		// check buffers since last update for new ids -> add new panel (tab)
+		}
+	}
+
+	public void update(Buffer buffer) {
+
+		while (buffer.size() >= 1) {
+
+			String[] temp = buffer.pop().split(" sagt:");
+
+			for (Chatwindow tab : tabs) {
+				if (tab.getLabel().getText().equals(temp[0])) {
+					tab.getText().append(temp[1]);
+					tab.getText().append("\n");
+				}
+
+			}
+		}
 
 	}
 
@@ -36,8 +62,6 @@ public class Gui {
 
 		frame.setVisible(true);
 
-		JPanel log = new JPanel();
-		JTextArea textArea;
 		textArea = new JTextArea(50, 10);
 		textArea.setEditable(false);
 		PrintStream printStream = new PrintStream(new CustomOutputStream(
@@ -46,29 +70,8 @@ public class Gui {
 		System.setOut(printStream);
 		System.setErr(printStream);
 		log.add(textArea);
-		JScrollPane scrollPane = new JScrollPane(log);
+
 		tabbedPane.addTab("Log", null, scrollPane, "Does nothing");
-
-		// TEST
-
-		JPanel panel1 = new JPanel();
-		panel1.add(new JTextArea());
-
-		JButton button = new JButton("Send something");
-		button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				Main.getChatengine().send("a button was clicked");
-
-			}
-		});
-
-		panel1.add(button);
-
-		tabbedPane.addTab("User 1", null, panel1, "for testing purpose only");
-
 	}
 
 	public JFrame getGui() {

@@ -3,6 +3,8 @@ package javachat;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
+//TODO: antworten
+
 public class Main {
 
 	static Engine chatengine = null;
