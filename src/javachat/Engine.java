@@ -43,9 +43,20 @@ public class Engine {
 
 		});
 
-		
 		//print incomming message
 		//TODO: write this into the buffer
+		socket.on("chat message",  new Emitter.Listener() {
+
+			@Override
+			public void call(Object... args) {
+				System.out.println("there was something: " + args.toString());
+
+			}
+
+		});
+		
+		
+		
 		socket.on(Socket.EVENT_MESSAGE, new Emitter.Listener() {
 			@Override
 			public void call(Object... args) {
