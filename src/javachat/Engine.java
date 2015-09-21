@@ -9,20 +9,19 @@ import java.util.ArrayList;
 
 public class Engine {
 
-	ArrayList<Buffer> buffers;
+	Buffer buffer = new Buffer();
 	Gui gui;
 	ArrayList<Chatwindow> windows;
 	Socket socket;
+	String tempmessage = "";
 
 	public Engine() {
-		
-		
+
 	}
 
 	public void initializeSocket(String url) {
-		
-		
-		//set up socket
+
+		// set up socket
 		try {
 			socket = IO.socket(url);
 		} catch (URISyntaxException e) {
@@ -30,9 +29,7 @@ public class Engine {
 			System.out.println(e);
 		}
 
-		
-
-		//tell me when connected
+		// tell me when connected
 		socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
 
 			@Override
@@ -43,20 +40,30 @@ public class Engine {
 
 		});
 
-		//print incomming message
-		//TODO: write this into the buffer
-		socket.on("chat message",  new Emitter.Listener() {
+		// print incomming message
+		// TODO: write this into the buffer
+		socket.on("who", new Emitter.Listener() {
 
 			@Override
 			public void call(Object... args) {
-				System.out.println("there was something: " + args.toString());
+				tempmessage = args[0].toString() + " sagt: ";
+			}
+
+		}).on("support message", new Emitter.Listener() {
+
+			@Override
+			public void call(Object... args) {
+				tempmessage = tempmessage + args[0].toString();
+				System.out.println(tempmessage);
+
+				buffer.addMessage(tempmessage);
+				// clean
+				tempmessage = "";
 
 			}
 
 		});
-		
-		
-		
+
 		socket.on(Socket.EVENT_MESSAGE, new Emitter.Listener() {
 			@Override
 			public void call(Object... args) {
@@ -70,9 +77,8 @@ public class Engine {
 				System.out.println(err);
 			}
 		});
-		
-		
-		//tell me when disconnected
+
+		// tell me when disconnected
 		socket.on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
 
 			@Override
@@ -81,11 +87,9 @@ public class Engine {
 				socket.disconnect();
 			}
 		});
-		
-		
+
 		//
 		socket.connect();
-
 
 	}
 
@@ -110,8 +114,8 @@ public class Engine {
 
 		socket.emit("chat message", message);
 	}
-	
-	public Socket getSocket(){
+
+	public Socket getSocket() {
 		return socket;
 	}
 

@@ -1,31 +1,25 @@
 package javachat;
 
+import java.util.ArrayList;
+
 public class Buffer {
-	
-	String who ="";
-	String message ="";
-	
-	
-	public Buffer (String who, String message) {
-		this.who = who;
-		this.message = message;
+
+	ArrayList<String> messages;
+
+	public Buffer() {
+
 	}
-	
-	
-	public String getWho() {
-		return who;
+
+	public ArrayList<String> getMessages() {
+		return messages;
 	}
-	public void setWho(String who) {
-		this.who = who;
+
+	public void flush() {
+		this.messages.clear();
 	}
-	public String getMessage() {
-		return message;
+
+	public void addMessage(String message) {
+		this.messages.add(message);
 	}
-	public void setMessage(String message) {
-		this.message = message;
-	}
-	
-	
-	
 
 }
